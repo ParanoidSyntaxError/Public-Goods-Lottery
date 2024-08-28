@@ -4,3 +4,6 @@ out
 lib
 node_modules
 generated
+.next
+next-env.d.ts
+.env
