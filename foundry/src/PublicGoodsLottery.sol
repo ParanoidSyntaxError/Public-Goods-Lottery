@@ -30,6 +30,16 @@ contract PublicGoodsLottery is
 
     constructor(address vrfWrapper) VRFV2PlusWrapperConsumerBase(vrfWrapper) {}
 
+    function onTokenTransfer(address /* sender */, uint256 /* amount */, bytes calldata data) external override {
+        if(msg.sender != address(getLinkToken())) {
+            revert InvalidOnTokenTransferMsgSender(msg.sender);
+        }
+        
+        (uint256 lotteryId) = abi.decode(data, (uint256));
+
+        requestEndLottery(lotteryId);
+    }
+
     function createLottery(
         uint256 expiration,
         address receiver
@@ -69,10 +79,10 @@ contract PublicGoodsLottery is
             Ticket(receiver, _lotteries[lotteryId].totalTickets)
         );
 
-        emit TicketPurchased(lotteryId, ticketId, receiver, amount);
+        emit TicketPurchased(lotteryId, ticketId, receiver, amount, msg.value);
     }
 
-    function requestEndLottery(uint256 lotteryId) external override {
+    function requestEndLottery(uint256 lotteryId) public override {
         if (lotteryId >= _totalLotteries) {
             revert NonexistentLottery(lotteryId);
         }
@@ -138,7 +148,7 @@ contract PublicGoodsLottery is
             Address.sendValue(payable(winners[i]), winnersValues[i]);
         }
 
-        emit LotteryEnded(lotteryId, _lotteries[lotteryId].receiver, pgValue, winners, winnersValues);
+        emit LotteryEnded(lotteryId, winners, winnersValues);
     }
 
     function fulfillRandomWords(

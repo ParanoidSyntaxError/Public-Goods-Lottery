@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-interface IPublicGoodsLottery {
+import {IERC677Receiver} from "@chainlink/shared/interfaces/IERC677Receiver.sol";
+
+interface IPublicGoodsLottery is IERC677Receiver {
     error InvalidExpiration(uint256 expiration);
 
     error InsufficientValue(uint256 value);
@@ -15,6 +17,8 @@ interface IPublicGoodsLottery {
 
     error InvalidTicketIds(uint256 lowerId, uint256 upperId);
 
+    error InvalidOnTokenTransferMsgSender(address msgSender);
+
     event LotteryCreated(
         uint256 indexed lotteryId,
         uint256 indexed expiration,
@@ -25,13 +29,12 @@ interface IPublicGoodsLottery {
         uint256 indexed lotteryId,
         uint256 indexed ticketId,
         address indexed receiver,
-        uint256 amount
+        uint256 amount,
+        uint256 value
     );
 
     event LotteryEnded(
         uint256 indexed lotteryId,
-        address indexed pgReceiver,
-        uint256 pgValue,
         address[] winners,
         uint256[] winnersValues
     );

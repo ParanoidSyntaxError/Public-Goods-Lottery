@@ -20,6 +20,7 @@ PublicGoodsLottery.LotteryCreated.handler(async ({ event, context }) => {
         expiration: event.params.expiration,
         receiver: event.params.receiver,
         totalTickets: 0n,
+        value: 0n,
         complete: false
     };
 
@@ -53,6 +54,7 @@ PublicGoodsLottery.TicketPurchased.handler(async ({ event, context }) => {
         expiration: lottery.expiration,
         receiver: lottery.receiver,
         totalTickets: lottery.totalTickets + event.params.amount,
+        value: lottery.value + event.params.value,
         complete: false,
     });
 });
@@ -75,6 +77,7 @@ PublicGoodsLottery.LotteryEnded.handler(async ({ event, context }) => {
         expiration: lottery.expiration,
         receiver: lottery.receiver,
         totalTickets: lottery.totalTickets,
+        value: lottery.value,
         complete: true,
     });
 });
