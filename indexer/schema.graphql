@@ -3,6 +3,7 @@ type Lottery {
     expiration: BigInt!
     receiver: String!
     totalTickets: BigInt!
+    value: BigInt!
     complete: Boolean!
     ticketHolders: [TicketHolder!]! @derivedFrom(field: "lottery")
     winners: [Winner!]! @derivedFrom(field: "lottery")
