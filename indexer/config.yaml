@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=./node_modules/envio/evm.schema.json
+name: Public Goods Lottery Indexer
+networks:
+- id: 84532
+  start_block: 14444550
+  contracts:
+  - name: PublicGoodsLottery
+    address:
+    - 0x739D1F083f3cE8C11E80bA9A802257dd3238350F
+    handler: src/EventHandlers.ts
+    events:
+    - event: LotteryCreated(uint256 indexed lotteryId, uint256 indexed expiration, address indexed receiver)
+    - event: LotteryEnded(uint256 indexed lotteryId, address indexed pgReceiver, uint256 pgValue, address[] winners, uint256[] winnersValues)
+    - event: TicketPurchased(uint256 indexed lotteryId, uint256 indexed ticketId, address indexed receiver, uint256 amount)

@@ -44,6 +44,8 @@ contract PublicGoodsLottery is
         _lotteries[lotteryId].receiver = receiver;
 
         _totalLotteries++;
+
+        emit LotteryCreated(lotteryId, expiration, receiver);
     }
 
     function buyTicket(
