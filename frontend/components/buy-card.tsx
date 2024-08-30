@@ -21,8 +21,9 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Card } from "./ui/card";
 
-export interface BuyFormProps extends React.HTMLAttributes<HTMLElement> { 
+export interface BuyCardProps extends React.HTMLAttributes<HTMLElement> { 
 }
 
 const formSchema = z.object({
@@ -30,9 +31,9 @@ const formSchema = z.object({
     amount: z.number()
 })
 
-export default function BuyForm({
+export default function BuyCard({
     ...props
-}: BuyFormProps) {
+}: BuyCardProps) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -48,7 +49,7 @@ export default function BuyForm({
     };
 
     return (
-        <div
+        <Card
             {...props}
         >
             <Form
@@ -140,6 +141,6 @@ export default function BuyForm({
                     </Button>
                 </form>
             </Form>
-        </div>
+        </Card>
     );
 } 
