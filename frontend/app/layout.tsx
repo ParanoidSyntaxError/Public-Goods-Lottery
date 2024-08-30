@@ -34,7 +34,9 @@ export default function RootLayout({
                 <div>
                     <TopNav />
                 </div>
-                <div>
+                <div
+                    className="px-4"
+                >
                     {children}
                 </div>
             </body>

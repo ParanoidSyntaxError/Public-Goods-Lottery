@@ -38,7 +38,7 @@ export default function BuyCard({
         resolver: zodResolver(formSchema),
         defaultValues: {
             chainId: "",
-            amount: 0,
+            amount: 1,
         },
         mode: "all"
     });
@@ -113,8 +113,8 @@ export default function BuyCard({
                                         value={field.value}
                                         onChange={(value) => {
                                             let amount = Number(value.currentTarget.value);
-                                            if(Number.isNaN(amount) || amount < 0) {
-                                                amount = 0;
+                                            if(Number.isNaN(amount) || amount < 1) {
+                                                amount = 1;
                                             }
                                             form.setValue("amount", amount);
                                         }}
@@ -130,7 +130,7 @@ export default function BuyCard({
                         <div
                             className="text-2xl font-semibold text-left"
                         >
-                            0.0001 ETH
+                            {(form.getValues("amount") * 0.001).toFixed(3)} ETH
                         </div>
                         <Separator />
                     </div>
