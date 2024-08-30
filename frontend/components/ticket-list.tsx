@@ -1,4 +1,4 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export interface Ticket {
     holder: string;
@@ -8,10 +8,12 @@ export interface Ticket {
 
 export interface TicketListProps extends React.HTMLAttributes<HTMLElement> {
     tickets: Ticket[];
+    connectedHolder?: Ticket;
 }
 
 export default function TicketList({
     tickets,
+    connectedHolder,
     ...props
 }: TicketListProps) {
     return (
@@ -36,6 +38,24 @@ export default function TicketList({
                     </TableRow>
                 </TableHeader>
                 <TableBody>
+                    {connectedHolder &&
+                        <TableRow
+                            className="bg-blue-50"
+                        >
+                            <TableCell>
+                                You
+                            </TableCell>
+                            <TableCell>
+                                {connectedHolder.network}
+                            </TableCell>
+                            <TableCell>
+                                {connectedHolder.amount}
+                            </TableCell>
+                            <TableCell>
+                                X%
+                            </TableCell>
+                        </TableRow>
+                    }
                     {tickets.map((ticket, index) => (
                         <TableRow
                             key={index}

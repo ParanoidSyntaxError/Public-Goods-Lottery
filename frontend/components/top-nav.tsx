@@ -30,6 +30,16 @@ export default function TopNav() {
                         Explore
                     </Button>
                 </Link>
+                <Link
+                    href="/create"
+                >
+                    <Button
+                        variant="link"
+                        className="h-fit p-0 text-lg"
+                    >
+                        Create
+                    </Button>
+                </Link>
                 <div>
                     <Web3AuthConnector/>
                 </div>
