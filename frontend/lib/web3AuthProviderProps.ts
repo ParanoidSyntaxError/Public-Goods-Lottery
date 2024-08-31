@@ -2,8 +2,6 @@ import { Web3Auth, Web3AuthOptions } from "@web3auth/modal";
 import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 
-const pgLotterySepoliaBase = "0x739D1F083f3cE8C11E80bA9A802257dd3238350F";
-
 const chainConfig = {
     chainNamespace: CHAIN_NAMESPACES.EIP155,
     chainId: "0x14a34",

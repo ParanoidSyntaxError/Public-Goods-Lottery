@@ -2,8 +2,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import DurationTag from "@/components/duration-text-";
+import ProfileLink from "@/components/profile-link";
 
-export interface LotteryCardProps {
+export interface LotteryCardProps extends React.HTMLAttributes<HTMLElement> {
     title: string;
     author: string;
     description: string;
@@ -18,69 +21,69 @@ export default function LotteryCard({
     description,
     value,
     tickets,
-    expiration
+    expiration,
+    ...props
 }: LotteryCardProps) {
     return (
         <Card
-            className="max-w-80 p-6 space-y-8"
+            {...props}
+            className={cn(
+                "p-6",
+                props.className
+            )}
         >
             <div
-                className="space-y-2"
+                className="space-y-8"
             >
                 <div
-                    className="text-2xl font-semibold"
+                    className="space-y-2"
                 >
-                    {title}
-                </div>
-                <Button
-                    variant="link"
-                    className="w-fit h-fit p-0"
-                >
-                    <Link
-                        href="org"
-                        className="text-base text-blue-600"
+                    <div
+                        className="text-2xl font-semibold"
                     >
-                        {author}
-                    </Link>
-                </Button>
-                <div
-                    className="text-sm text-muted-foreground pt-2"
-                >
-                    {description}
-                </div>
-            </div>
-            <div
-                className="space-y-2"
-            >
-                <div
-                    className="text-sm bg-muted px-2 py-1 rounded-lg w-fit"
-                >
-                    Ends in 5 hours
-                </div>
-                <div
-                    className="text-3xl font-bold"
-                >
-                    {value.toFixed(4)} ETH
-                </div>
-                <div
-                    className="text-sm text-muted-foreground"
-                >
-                    Raised from {tickets.toLocaleString("en-US", { maximumFractionDigits: 0 })} tickets
-                </div>
-                <Separator />
-            </div>
-            <div
-                className=""
-            >
-                <Button
-                    className="w-full rounded-full"
-                >
-                    <Link
-                        href="view"
+                        {title}
+                    </div>
+                    <ProfileLink
+                        label={author}
+                        url="org"
+                    />
+                    <div
+                        className="text-sm text-muted-foreground pt-2"
                     >
-                        View
-                    </Link>
-                </Button>
+                        {description}
+                    </div>
+                </div>
+                <div
+                    className="space-y-2"
+                >
+                    <DurationTag
+                        expiration={expiration}
+                    />
+                    <div
+                        className="text-3xl font-bold"
+                    >
+                        {value.toFixed(3)} ETH
+                    </div>
+                    <div
+                        className="text-sm text-muted-foreground"
+                    >
+                        Raised from {tickets.toLocaleString("en-US", { maximumFractionDigits: 0 })} tickets
+                    </div>
+                    <Separator />
+                </div>
+                <div
+                    className=""
+                >
+                    <Button
+                        className="w-full rounded-full"
+                    >
+                        <Link
+                            href="view"
+                        >
+                            View
+                        </Link>
+                    </Button>
+                </div>
             </div>
         </Card >
     );

@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Web3AuthConnector from "@/components/web3auth-connector";
+import ToggleTheme from "@/components/toggle-theme";
 
 export default function TopNav() {
     return (
         <div
-            className="flex flex-row justify-between items-center h-20 px-8"
+            className="flex flex-row justify-between items-center h-20"
         >
             <Link
                 href={"/"}
@@ -40,6 +41,7 @@ export default function TopNav() {
                         Create
                     </Button>
                 </Link>
+                <ToggleTheme/>
                 <div>
                     <Web3AuthConnector/>
                 </div>

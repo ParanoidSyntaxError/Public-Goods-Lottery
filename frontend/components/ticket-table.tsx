@@ -6,16 +6,16 @@ export interface Ticket {
     amount: number;
 }
 
-export interface TicketListProps extends React.HTMLAttributes<HTMLElement> {
+export interface TicketTableProps extends React.HTMLAttributes<HTMLElement> {
     tickets: Ticket[];
     connectedHolder?: Ticket;
 }
 
-export default function TicketList({
+export default function TicketTable({
     tickets,
     connectedHolder,
     ...props
-}: TicketListProps) {
+}: TicketTableProps) {
     return (
         <div
             {...props}
@@ -40,7 +40,7 @@ export default function TicketList({
                 <TableBody>
                     {connectedHolder &&
                         <TableRow
-                            className="bg-blue-50"
+                            className="bg-blue-600 bg-opacity-10"
                         >
                             <TableCell>
                                 You

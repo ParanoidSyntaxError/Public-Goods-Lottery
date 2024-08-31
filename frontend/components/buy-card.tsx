@@ -21,14 +21,16 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Card } from "./ui/card";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { web3Auth } from "@/lib/web3AuthProviderProps";
 
 export interface BuyCardProps extends React.HTMLAttributes<HTMLElement> { 
 }
 
 const formSchema = z.object({
-    chainId: z.string(),
-    amount: z.number()
+    chainId: z.string().min(1, "Network not selected"),
+    amount: z.number().min(1, "Must buy at least one ticket")
 })
 
 export default function BuyCard({
@@ -45,18 +47,24 @@ export default function BuyCard({
     form.watch();
 
     const submit = async () => {
-        
+
     };
 
     return (
         <Card
             {...props}
+            className={cn(
+                "p-6",
+                props.className
+            )}
         >
             <Form
                 {...form}
             >
                 <form
                     className="space-y-6"
+                    onSubmit={form.handleSubmit(submit)}
+                    action=""
                 >
                     <FormField
                         control={form.control}

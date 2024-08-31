@@ -1,7 +1,7 @@
 import BuyCard from "@/components/buy-card";
-import TicketList from "@/components/ticket-list";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import DurationTag from "@/components/duration-text-";
+import ProfileLink from "@/components/profile-link";
+import TicketTable from "@/components/ticket-table";
 
 const mockLottery = {
     title: "The Giveth Community of Makers",
@@ -58,16 +58,17 @@ const mockLottery = {
             network: "ETH",
             amount: 77
         }
-    ]
+    ],
+    expiration: new Date(Date.now() + 0)
 };
 
 export default function Lottery() {
     return (
         <div
-            className="space-y-16 mt-16"
+            className="space-y-16"
         >
             <div
-                className="flex flex-col w-[48rem] mx-auto space-y-8"
+                className="flex flex-col mx-auto space-y-8"
             >
                 <div
                     className="space-y-4"
@@ -77,17 +78,18 @@ export default function Lottery() {
                     >
                         {mockLottery.title}
                     </div>
-                    <Button
-                        variant="link"
-                        className="w-fit h-fit p-0"
+                    <div
+                        className="flex flex-row space-x-6"
                     >
-                        <Link
-                            href="org"
-                            className="text-xl text-blue-600"
-                        >
-                            {mockLottery.author}
-                        </Link>
-                    </Button>
+                        <ProfileLink
+                            label={mockLottery.author}
+                            url="org"
+                            className="text-xl"
+                        />
+                        <DurationTag
+                            expiration={mockLottery.expiration}
+                        />
+                    </div>
                 </div>
                 <div
                     className="text-lg"
@@ -96,15 +98,15 @@ export default function Lottery() {
                 </div>
             </div>
             <div
-                className="flex flex-row justify-between max-w-[48rem] mx-auto space-x-8"
+                className="flex flex-row justify-between mx-auto space-x-4"
             >
-                <TicketList
+                <TicketTable
                     className="w-full"
                     tickets={mockLottery.tickets}
                     connectedHolder={mockLottery.tickets[9]}
                 />
                 <BuyCard
-                    className="min-w-72 h-fit p-6"
+                    className="min-w-72 h-fit"
                 />
             </div>
         </div>
