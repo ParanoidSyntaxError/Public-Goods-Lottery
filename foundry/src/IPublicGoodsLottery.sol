@@ -21,6 +21,8 @@ interface IPublicGoodsLottery is IERC677Receiver {
 
     event LotteryCreated(
         uint256 indexed lotteryId,
+        string name,
+        string description,
         uint256 indexed expiration,
         address indexed receiver
     );
@@ -31,6 +33,11 @@ interface IPublicGoodsLottery is IERC677Receiver {
         address indexed receiver,
         uint256 amount,
         uint256 value
+    );
+
+    event LotteryEndRequested(
+        uint256 indexed lotteryId,
+        uint256 indexed vrfRequestId
     );
 
     event LotteryEnded(
@@ -54,6 +61,8 @@ interface IPublicGoodsLottery is IERC677Receiver {
     }
 
     function createLottery(
+        string memory name,
+        string memory description,
         uint256 expiration,
         address receiver
     ) external returns (uint256 lotteryId);

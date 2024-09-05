@@ -41,6 +41,8 @@ contract PublicGoodsLottery is
     }
 
     function createLottery(
+        string memory name,
+        string memory description,
         uint256 expiration,
         address receiver
     ) external override returns (uint256 lotteryId) {
@@ -55,7 +57,7 @@ contract PublicGoodsLottery is
 
         _totalLotteries++;
 
-        emit LotteryCreated(lotteryId, expiration, receiver);
+        emit LotteryCreated(lotteryId, name, description, expiration, receiver);
     }
 
     function buyTicket(
@@ -109,6 +111,8 @@ contract PublicGoodsLottery is
 
         _lotteries[lotteryId].vrfRequestId = vrfRequestId;
         _vrfLotteryIds[vrfRequestId] = lotteryId;
+
+        emit LotteryEndRequested(lotteryId, vrfRequestId);
     }
 
     function fulfillEndLottery(

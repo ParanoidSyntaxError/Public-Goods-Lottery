@@ -16,6 +16,6 @@ contract TestPublicGoodsLottery is Test {
         uint256 expiration = block.timestamp + vm.randomUint() + 1;
         address pgReceiver = makeAddr("LotteryReceiver");
 
-        pgLottery.createLottery(expiration, pgReceiver);
+        pgLottery.createLottery("Test name", "Test description", expiration, pgReceiver);
     }
 }

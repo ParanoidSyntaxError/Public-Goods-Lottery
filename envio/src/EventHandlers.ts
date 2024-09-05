@@ -6,6 +6,12 @@ import {
     Lottery,
 } from "generated";
 
+enum LotteryState {
+    InProgress = "inprogress",
+    Ending = "ending",
+    Ended = "ended"
+}
+
 function ticketHolderId(lotteryId: string, address: string): string {
     return lotteryId + address + "ticketHolder";
 }
@@ -17,11 +23,13 @@ function winnerId(lotteryId: string, address: string, index: string): string {
 PublicGoodsLottery.LotteryCreated.handler(async ({ event, context }) => {
     const lottery: Lottery = {
         id: event.params.lotteryId.toString(),
+        name: event.params.name,
+        description: event.params.description,
         expiration: event.params.expiration,
         receiver: event.params.receiver,
         totalTickets: 0n,
         value: 0n,
-        complete: false
+        state: LotteryState.InProgress
     };
 
     context.Lottery.set(lottery);
@@ -51,11 +59,31 @@ PublicGoodsLottery.TicketPurchased.handler(async ({ event, context }) => {
 
     context.Lottery.set({
         id: lottery.id,
+        name: lottery.name,
+        description: lottery.description,
         expiration: lottery.expiration,
         receiver: lottery.receiver,
         totalTickets: lottery.totalTickets + event.params.amount,
         value: lottery.value + event.params.value,
-        complete: false,
+        state: lottery.state,
+    });
+});
+
+PublicGoodsLottery.LotteryEndRequested.handler(async ({ event, context }) => {
+    const lottery = await context.Lottery.get(event.params.lotteryId.toString());
+    if (!lottery) {
+        return;
+    }
+
+    context.Lottery.set({
+        id: lottery.id,
+        name: lottery.name,
+        description: lottery.description,
+        expiration: lottery.expiration,
+        receiver: lottery.receiver,
+        totalTickets: lottery.totalTickets,
+        value: lottery.value,
+        state: LotteryState.Ending
     });
 });
 
@@ -74,10 +102,12 @@ PublicGoodsLottery.LotteryEnded.handler(async ({ event, context }) => {
 
     context.Lottery.set({
         id: lottery.id,
+        name: lottery.name,
+        description: lottery.description,
         expiration: lottery.expiration,
         receiver: lottery.receiver,
         totalTickets: lottery.totalTickets,
         value: lottery.value,
-        complete: true,
+        state: LotteryState.Ended
     });
 });

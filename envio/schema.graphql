@@ -1,10 +1,12 @@
 type Lottery {
     id: ID!
+    name: String!
+    description: String!
     expiration: BigInt!
     receiver: String!
     totalTickets: BigInt!
     value: BigInt!
-    complete: Boolean!
+    state: String!
     ticketHolders: [TicketHolder!]! @derivedFrom(field: "lottery")
     winners: [Winner!]! @derivedFrom(field: "lottery")
 }
