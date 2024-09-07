@@ -18,10 +18,11 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { web3Auth } from "@/lib/web3AuthProviderProps";
 import { buyTickets, ticketPrice } from "@/lib/lottery-crypto";
+import TotalTicketsLabel from "./total-tickets-label";
+import { Lottery } from "@/lib/lottery-indexer";
 
 export interface BuyCardProps extends React.HTMLAttributes<HTMLElement> {
-    lotteryId: string;
-    totalTickets?: bigint;
+    lottery: Lottery;
 }
 
 const formSchema = z.object({
@@ -29,8 +30,7 @@ const formSchema = z.object({
 })
 
 export default function BuyCard({
-    lotteryId,
-    totalTickets,
+    lottery,
     ...props
 }: BuyCardProps) {
     const form = useForm<z.infer<typeof formSchema>>({
@@ -49,7 +49,7 @@ export default function BuyCard({
 
         await buyTickets(
             web3Auth.provider,
-            lotteryId,
+            lottery.id,
             BigInt(form.getValues("amount")) * ticketPrice
         );
     };
@@ -70,22 +70,9 @@ export default function BuyCard({
                     onSubmit={form.handleSubmit(submit)}
                     action=""
                 >
-                    {(totalTickets !== undefined) &&
-                        <div
-                            className="space-x-1"
-                        >
-                            <span
-                                className="text-4xl"
-                            >
-                                {totalTickets.toString()}
-                            </span>
-                            <span
-                                className="text-sm"
-                            >
-                                TOTAL
-                            </span>
-                        </div>
-                    }
+                    <TotalTicketsLabel
+                        totalTickets={lottery.totalTickets}
+                    />
                     <FormField
                         control={form.control}
                         name="amount"

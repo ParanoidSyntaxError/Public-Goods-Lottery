@@ -6,30 +6,16 @@ import { cn, shortenAddress } from "@/lib/utils";
 import DurationTag from "@/components/duration-text-";
 import { formatUnits } from "ethers";
 import UserLink from "@/components/user-link";
+import { Lottery } from "@/lib/lottery-indexer";
 
 export interface LotteryCardProps extends React.HTMLAttributes<HTMLElement> {
-    id: string;
-    name: string;
-    description: string;
-    receiver: string;
-    value: bigint;
-    totalTickets: bigint;
-    expiration: Date;
+    lottery: Lottery;
 }
 
 export default function LotteryCard({
-    id,
-    name,
-    description,
-    receiver,
-    value,
-    totalTickets,
-    expiration,
+    lottery,
     ...props
 }: LotteryCardProps) {
-    const shortReceiver = shortenAddress(receiver);
-    const ethValue = formatUnits(value);
-
     return (
         <Card
             {...props}
@@ -45,35 +31,35 @@ export default function LotteryCard({
                     className="space-y-2"
                 >
                     <div
-                        className="text-2xl font-semibold"
+                        className="text-2xl font-semibold w-64 h-16 text-ellipsis line-clamp-2 overflow-hidden"
                     >
-                        {name}
+                        {lottery.name}
                     </div>
                     <UserLink
-                        label={shortReceiver}
-                        slug={receiver}
+                        label={shortenAddress(lottery.receiver)}
+                        slug={lottery.receiver}
                     />
                     <div
-                        className="text-sm text-muted-foreground pt-2"
+                        className="text-sm text-muted-foreground pt-2 w-64 h-12 text-ellipsis line-clamp-2 overflow-hidden"
                     >
-                        {description}
+                        {lottery.description}
                     </div>
                 </div>
                 <div
                     className="space-y-2"
                 >
                     <DurationTag
-                        expiration={expiration}
+                        expiration={lottery.expiration}
                     />
                     <div
                         className="text-3xl font-bold"
                     >
-                        {ethValue} ETH
+                        {formatUnits(lottery.value)} ETH
                     </div>
                     <div
                         className="text-sm text-muted-foreground"
                     >
-                        Raised from {totalTickets.toLocaleString("en-US", { maximumFractionDigits: 0 })} tickets
+                        Raised from {lottery.totalTickets.toLocaleString("en-US", { maximumFractionDigits: 0 })} tickets
                     </div>
                     <Separator />
                 </div>
@@ -85,7 +71,7 @@ export default function LotteryCard({
                         asChild
                     >
                         <Link
-                            href={`/lottery/${id}`}
+                            href={`/lottery/${lottery.id}`}
                         >
                             View
                         </Link>

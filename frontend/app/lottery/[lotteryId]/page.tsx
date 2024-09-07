@@ -1,8 +1,9 @@
 import BuyCard from "@/components/buy-card";
 import DurationTag from "@/components/duration-text-";
+import EndCard from "@/components/end-card";
 import TicketTable from "@/components/ticket-table";
 import UserLink from "@/components/user-link";
-import { getLottery, getTicketHolders } from "@/lib/lottery-indexer";
+import { getLottery, getTicketHolders, LotteryState } from "@/lib/lottery-indexer";
 import { shortenAddress } from "@/lib/utils";
 import { formatUnits } from "ethers";
 
@@ -20,9 +21,6 @@ export default async function LotteryPage({
         )
     }
 
-    const shortReceiver = shortenAddress(lottery.receiver);
-    const ethValue = formatUnits(lottery.value);
-
     return (
         <div
             className="space-y-16"
@@ -39,7 +37,7 @@ export default async function LotteryPage({
                         {lottery.name}
                     </div>
                     <UserLink
-                        label={shortReceiver}
+                        label={shortenAddress(lottery.receiver)}
                         slug={lottery.receiver}
                         className="text-xl"
                     />
@@ -49,7 +47,7 @@ export default async function LotteryPage({
                         <div
                             className="text-4xl"
                         >
-                            {ethValue} ETH
+                            {formatUnits(lottery.value)} ETH
                         </div>
                         <DurationTag
                             className="h-fit"
@@ -71,11 +69,16 @@ export default async function LotteryPage({
                     lottery={lottery}
                     tickets={ticketHolders}
                 />
-                <BuyCard
-                    className="min-w-72 h-fit"
-                    lotteryId={lottery.id}
-                    totalTickets={lottery.totalTickets}
-                />
+                {lottery.expiration.getTime() > Date.now() ?
+                    <BuyCard
+                        className="min-w-72 h-fit"
+                        lottery={lottery}
+                    /> :
+                    <EndCard
+                        className="min-w-72 h-fit"
+                        lottery={lottery}
+                    />
+                }
             </div>
         </div>
     );

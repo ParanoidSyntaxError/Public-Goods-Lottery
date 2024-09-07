@@ -21,7 +21,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "./ui/calendar";
-import { createLottery } from "@/lib/lottery-crypto";
+import { createLottery, getAddress } from "@/lib/lottery-crypto";
 
 export interface CreateCardProps extends React.HTMLAttributes<HTMLElement> {
 }
@@ -60,6 +60,19 @@ export default function CreateCard({
             form.getValues("expiration"),
             form.getValues("receiver")
         );
+    };
+
+    const fiveMinutes = () => {
+        form.setValue("expiration", new Date(Date.now() + 300000));
+    };
+
+    const useConnectedAddress = async () => {
+        if (web3Auth.provider) {
+            const connectedAddress = await getAddress(web3Auth.provider);
+            if (connectedAddress) {
+                form.setValue("receiver", connectedAddress);
+            }
+        }
     };
 
     return (
@@ -113,63 +126,83 @@ export default function CreateCard({
                                 </FormItem>
                             )}
                         />
-                        <FormField
-                            control={form.control}
-                            name="expiration"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-col">
-                                    <FormLabel>Expiration</FormLabel>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <FormControl>
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-full pl-3 text-left font-normal",
-                                                        !field.value && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    {field.value ? (
-                                                        format(field.value, "PPP")
-                                                    ) : (
-                                                        <span>Pick a date</span>
-                                                    )}
-                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                </Button>
-                                            </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                onSelect={field.onChange}
-                                                disabled={(date) =>
-                                                    date < new Date()
-                                                }
-                                                initialFocus
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="receiver"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Receiver
-                                    </FormLabel>
-                                    <Input
-                                        placeholder=""
-                                        {...field}
-                                    />
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        <div>
+                            <FormField
+                                control={form.control}
+                                name="expiration"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel>Expiration</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "w-full pl-3 text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    disabled={(date) =>
+                                                        date < new Date()
+                                                    }
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <Button
+                                variant="link"
+                                className="h-fit p-1 text-muted-foreground"
+                                type="button"
+                                onClick={fiveMinutes}
+                            >
+                                Five minutes
+                            </Button>
+                        </div>
+                        <div>
+                            <FormField
+                                control={form.control}
+                                name="receiver"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>
+                                            Receiver
+                                        </FormLabel>
+                                        <Input
+                                            placeholder=""
+                                            {...field}
+                                        />
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <Button
+                                variant="link"
+                                className="h-fit p-1 text-muted-foreground"
+                                type="button"
+                                onClick={useConnectedAddress}
+                            >
+                                Connected address
+                            </Button>
+                        </div>
                     </div>
                     <Button
                         className="rounded-full w-full"

@@ -16,19 +16,13 @@ export default function LotteryGrid({
             <div
                 className="grid justify-left gap-x-12 gap-y-8"
                 style={{
-                    gridTemplateColumns: "repeat(auto-fit, 20rem)"
+                    gridTemplateColumns: "repeat(auto-fit, 20rem)",
                 }}
             >
                 {lotteries.map((lottery, index) => (
                     <LotteryCard
                         key={index}
-                        id={lottery.id}
-                        name={lottery.name}
-                        description={lottery.description}
-                        receiver={lottery.receiver}
-                        value={lottery.value}
-                        totalTickets={lottery.totalTickets}
-                        expiration={lottery.expiration}
+                        lottery={lottery}
                     />
                 ))}
             </div>

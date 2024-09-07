@@ -15,7 +15,7 @@ export default function TopNav() {
                 <div
                     className="text-2xl font-semibold"
                 >
-                    Public Goods Lottery
+                    🎰 Public Goods Lottery
                 </div>
             </Link>
             <div

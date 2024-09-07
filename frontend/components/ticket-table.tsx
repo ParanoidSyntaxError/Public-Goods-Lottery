@@ -3,7 +3,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getAddress } from "@/lib/lottery-crypto";
 import { getTicketHolder } from "@/lib/lottery-indexer";
-import { Lottery, percentageLabel, shortenAddress, TicketHolder } from "@/lib/utils";
+import { cn, Lottery, percentageLabel, shortenAddress, TicketHolder } from "@/lib/utils";
 import { useState } from "react";
 import { web3Auth } from "@/lib/web3AuthProviderProps";
 
@@ -45,6 +45,10 @@ export default function TicketTable({
     return (
         <div
             {...props}
+            className={cn(
+                "rounded-xl overflow-hidden border-2 h-fit",
+                props.className
+            )}
         >
             <Table>
                 <TableHeader>
@@ -52,10 +56,14 @@ export default function TicketTable({
                         <TableHead>
                             Holder
                         </TableHead>
-                        <TableHead>
+                        <TableHead
+                            className="w-40"
+                        >
                             Tickets
                         </TableHead>
-                        <TableHead>
+                        <TableHead
+                            className="w-40"
+                        >
                             Chance
                         </TableHead>
                     </TableRow>
@@ -81,7 +89,7 @@ export default function TicketTable({
                             key={index}
                         >
                             <TableCell>
-                                {shortenAddress(ticket.address)}
+                                {ticket.address}
                             </TableCell>
                             <TableCell>
                                 {ticket.amount.toString()}
