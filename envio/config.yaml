@@ -2,7 +2,7 @@
 name: Public Goods Lottery Indexer
 networks:
 - id: 84532
-  start_block: 	14960740
+  start_block: 	14960730
   contracts:
   - name: PublicGoodsLottery
     address:
