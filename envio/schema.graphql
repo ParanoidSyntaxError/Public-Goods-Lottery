@@ -8,6 +8,7 @@ type Lottery {
     value: BigInt!
     state: String!
     ticketHolders: [TicketHolder!]! @derivedFrom(field: "lottery")
+    vrfRequestId: BigInt!
     winners: [Winner!]! @derivedFrom(field: "lottery")
 }
 

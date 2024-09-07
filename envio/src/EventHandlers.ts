@@ -29,7 +29,8 @@ PublicGoodsLottery.LotteryCreated.handler(async ({ event, context }) => {
         receiver: event.params.receiver,
         totalTickets: 0n,
         value: 0n,
-        state: LotteryState.InProgress
+        state: LotteryState.InProgress,
+        vrfRequestId: 0n
     };
 
     context.Lottery.set(lottery);
@@ -66,6 +67,7 @@ PublicGoodsLottery.TicketPurchased.handler(async ({ event, context }) => {
         totalTickets: lottery.totalTickets + event.params.amount,
         value: lottery.value + event.params.value,
         state: lottery.state,
+        vrfRequestId: 0n
     });
 });
 
@@ -83,7 +85,8 @@ PublicGoodsLottery.LotteryEndRequested.handler(async ({ event, context }) => {
         receiver: lottery.receiver,
         totalTickets: lottery.totalTickets,
         value: lottery.value,
-        state: LotteryState.Ending
+        state: LotteryState.Ending,
+        vrfRequestId: event.params.vrfRequestId
     });
 });
 
@@ -108,6 +111,7 @@ PublicGoodsLottery.LotteryEnded.handler(async ({ event, context }) => {
         receiver: lottery.receiver,
         totalTickets: lottery.totalTickets,
         value: lottery.value,
-        state: LotteryState.Ended
+        state: LotteryState.Ended,
+        vrfRequestId: lottery.vrfRequestId
     });
 });
