@@ -20,7 +20,7 @@ contract PublicGoodsLottery is
 
     uint256 public constant TICKET_DECIMALS = 15;
 
-    uint32 public constant VRF_CALLBACK_GAS_LIMIT = 100_000;
+    uint32 public constant VRF_CALLBACK_GAS_LIMIT = 1_000_000;
     uint16 public constant VRF_REQUEST_CONFIRMATIONS = 16;
 
     uint256 public constant PG_PERCENTAGE = 70_00;
@@ -100,13 +100,15 @@ contract PublicGoodsLottery is
             );
         }
 
-        (uint256 vrfRequestId, ) = requestRandomness(
+        bytes memory extraArgs = VRFV2PlusClient._argsToBytes(
+            VRFV2PlusClient.ExtraArgsV1({nativePayment: false})
+        );
+        
+        (uint256 vrfRequestId,) = requestRandomness(
             VRF_CALLBACK_GAS_LIMIT,
             VRF_REQUEST_CONFIRMATIONS,
             uint32(WINNERS_PERCENTAGES.length),
-            VRFV2PlusClient._argsToBytes(
-                VRFV2PlusClient.ExtraArgsV1({nativePayment: false})
-            )
+            extraArgs
         );
 
         _lotteries[lotteryId].vrfRequestId = vrfRequestId;
@@ -130,7 +132,7 @@ contract PublicGoodsLottery is
         uint256 lotteryValue = _ticketsToValue(
             _lotteries[lotteryId].totalTickets
         );
-        
+
         (uint256 winnersTotal, uint256[] memory winnersValues) = _winnersValues(
             lotteryValue
         );

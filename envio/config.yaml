@@ -2,11 +2,11 @@
 name: Public Goods Lottery Indexer
 networks:
 - id: 84532
-  start_block: 	14895680
+  start_block: 	14960740
   contracts:
   - name: PublicGoodsLottery
     address:
-    - 0x19C1C374fDB513DA78CdE1202FBf2B0c56c5cdDc
+    - 0x2a975063E4794593Dfb7CCfB4b321C91c3B6acb0
     handler: src/EventHandlers.ts
     events:
     - event: LotteryCreated(uint256 indexed lotteryId, string name, string description, uint256 indexed expiration, address indexed receiver)

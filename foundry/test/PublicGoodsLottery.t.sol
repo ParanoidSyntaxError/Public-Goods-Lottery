@@ -9,7 +9,7 @@ contract TestPublicGoodsLottery is Test {
     PublicGoodsLottery public pgLottery;
 
     function setUp() public {
-        pgLottery = new PublicGoodsLottery(address(10));
+        pgLottery = new PublicGoodsLottery();
     }
 
     function testCreateLottery() public {
@@ -17,5 +17,17 @@ contract TestPublicGoodsLottery is Test {
         address pgReceiver = makeAddr("LotteryReceiver");
 
         pgLottery.createLottery("Test name", "Test description", expiration, pgReceiver);
+    }
+
+    function testRequestEndLottery() public {
+        uint256 duration = vm.randomUint() + 1;
+        uint256 expiration = block.timestamp + duration;
+        address pgReceiver = makeAddr("LotteryReceiver");
+
+        uint256 lotteryId = pgLottery.createLottery("Test name", "Test description", expiration, pgReceiver);
+
+        skip(duration * 2);
+
+        pgLottery.requestEndLottery(lotteryId);
     }
 }
