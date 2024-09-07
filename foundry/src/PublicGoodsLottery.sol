@@ -30,12 +30,37 @@ contract PublicGoodsLottery is
 
     constructor(address vrfWrapper) VRFV2PlusWrapperConsumerBase(vrfWrapper) {}
 
-    function onTokenTransfer(address /* sender */, uint256 /* amount */, bytes calldata data) external override {
-        if(msg.sender != address(getLinkToken())) {
+    function lottery(
+        uint256 lotteryId
+    )
+        external
+        view
+        override
+        returns (uint256, address, uint256, uint256, uint256[] memory)
+    {
+        return (
+            _lotteries[lotteryId].expiration,
+            _lotteries[lotteryId].receiver,
+            _lotteries[lotteryId].totalTickets,
+            _lotteries[lotteryId].vrfRequestId,
+            _lotteries[lotteryId].vrfResponses
+        );
+    }
+
+    function totalLotteries() external view override returns (uint256) {
+        return _totalLotteries;
+    }
+
+    function onTokenTransfer(
+        address /* sender */,
+        uint256 /* amount */,
+        bytes calldata data
+    ) external override {
+        if (msg.sender != address(getLinkToken())) {
             revert InvalidOnTokenTransferMsgSender(msg.sender);
         }
-        
-        (uint256 lotteryId) = abi.decode(data, (uint256));
+
+        uint256 lotteryId = abi.decode(data, (uint256));
 
         requestEndLottery(lotteryId);
     }
@@ -103,8 +128,8 @@ contract PublicGoodsLottery is
         bytes memory extraArgs = VRFV2PlusClient._argsToBytes(
             VRFV2PlusClient.ExtraArgsV1({nativePayment: false})
         );
-        
-        (uint256 vrfRequestId,) = requestRandomness(
+
+        (uint256 vrfRequestId, ) = requestRandomness(
             VRF_CALLBACK_GAS_LIMIT,
             VRF_REQUEST_CONFIRMATIONS,
             uint32(WINNERS_PERCENTAGES.length),
@@ -145,10 +170,7 @@ contract PublicGoodsLottery is
             upperTicketIds
         );
 
-        Address.sendValue(
-            payable(_lotteries[lotteryId].receiver),
-            pgValue
-        );
+        Address.sendValue(payable(_lotteries[lotteryId].receiver), pgValue);
 
         for (uint256 i = 0; i < winners.length; i++) {
             Address.sendValue(payable(winners[i]), winnersValues[i]);

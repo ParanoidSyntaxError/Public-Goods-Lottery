@@ -60,6 +60,15 @@ interface IPublicGoodsLottery is IERC677Receiver {
         uint256 upperBound;
     }
 
+    function totalLotteries() external view returns (uint256);
+
+    function lottery(
+        uint256 lotteryId
+    )
+        external
+        view
+        returns (uint256, address, uint256, uint256, uint256[] memory);
+
     function createLottery(
         string memory name,
         string memory description,

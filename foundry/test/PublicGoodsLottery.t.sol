@@ -9,7 +9,7 @@ contract TestPublicGoodsLottery is Test {
     PublicGoodsLottery public pgLottery;
 
     function setUp() public {
-        pgLottery = new PublicGoodsLottery();
+        pgLottery = new PublicGoodsLottery(address(1));
     }
 
     function testCreateLottery() public {
