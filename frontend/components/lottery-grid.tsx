@@ -1,76 +1,12 @@
 import LotteryCard from "@/components/lottery-card";
-
-const mockLotteries = [
-    {
-        title: "Test Lottery",
-        author: "Owner",
-        description: "LFG get in here boys!",
-        value: 10,
-        tickets: 10000,
-        expiration: new Date(Date.now() + 60000000)
-    },
-    {
-        title: "Test Lottery",
-        author: "Owner",
-        description: "LFG get in here boys!",
-        value: 10,
-        tickets: 10000,
-        expiration: new Date()
-    },
-    {
-        title: "Test Lottery",
-        author: "Owner",
-        description: "LFG get in here boys!",
-        value: 10,
-        tickets: 10000,
-        expiration: new Date()
-    },
-    {
-        title: "Test Lottery",
-        author: "Owner",
-        description: "LFG get in here boys!",
-        value: 10,
-        tickets: 10000,
-        expiration: new Date()
-    },
-    {
-        title: "Test Lottery",
-        author: "Owner",
-        description: "LFG get in here boys!",
-        value: 10,
-        tickets: 10000,
-        expiration: new Date()
-    },
-    {
-        title: "Test Lottery",
-        author: "Owner",
-        description: "LFG get in here boys!",
-        value: 10,
-        tickets: 10000,
-        expiration: new Date()
-    },
-    {
-        title: "Test Lottery",
-        author: "Owner",
-        description: "LFG get in here boys!",
-        value: 10,
-        tickets: 10000,
-        expiration: new Date()
-    },
-    {
-        title: "Test Lottery",
-        author: "Owner",
-        description: "LFG get in here boys!",
-        value: 10,
-        tickets: 10000,
-        expiration: new Date()
-    },
-];
+import { Lottery } from "@/lib/lottery-indexer";
 
 export interface LotteryGridProps extends React.HTMLAttributes<HTMLElement> { 
+    lotteries: Lottery[]
 }
 
 export default function LotteryGrid({
+    lotteries,
     ...props
 }: LotteryGridProps) {
     return (
@@ -78,19 +14,20 @@ export default function LotteryGrid({
             {...props}
         >
             <div
-                className="grid justify-center gap-x-12 gap-y-8"
+                className="grid justify-left gap-x-12 gap-y-8"
                 style={{
                     gridTemplateColumns: "repeat(auto-fit, 20rem)"
                 }}
             >
-                {mockLotteries.map((lottery, index) => (
+                {lotteries.map((lottery, index) => (
                     <LotteryCard
                         key={index}
-                        title={lottery.title}
-                        author={lottery.author}
+                        id={lottery.id}
+                        name={lottery.name}
                         description={lottery.description}
+                        receiver={lottery.receiver}
                         value={lottery.value}
-                        tickets={lottery.tickets}
+                        totalTickets={lottery.totalTickets}
                         expiration={lottery.expiration}
                     />
                 ))}

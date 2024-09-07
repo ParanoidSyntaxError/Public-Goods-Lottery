@@ -1,21 +1,49 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+"use client";
 
-export interface Ticket {
-    holder: string;
-    network: string;
-    amount: number;
-}
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { getAddress } from "@/lib/lottery-crypto";
+import { getTicketHolder } from "@/lib/lottery-indexer";
+import { Lottery, percentageLabel, shortenAddress, TicketHolder } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { useWeb3Auth } from "@web3auth/modal-react-hooks";
 
 export interface TicketTableProps extends React.HTMLAttributes<HTMLElement> {
-    tickets: Ticket[];
-    connectedHolder?: Ticket;
+    lottery: Lottery;
+    tickets: TicketHolder[];
 }
 
 export default function TicketTable({
+    lottery,
     tickets,
-    connectedHolder,
     ...props
 }: TicketTableProps) {
+    const [connectedHolder, setConnectedHolder] = useState<TicketHolder | undefined>(undefined);
+
+    const { isInitialized, isConnected, provider } = useWeb3Auth();
+
+    useEffect(() => {
+        const updateConnectedHolder = async () => {
+            if (provider) {
+                const connectedAddress = await getAddress(provider);
+                if (connectedAddress) {
+                    const holder = await getTicketHolder(lottery.id, connectedAddress);
+                    setConnectedHolder(holder);
+                }
+            } else {
+                setConnectedHolder(undefined);
+            }
+        };
+
+        updateConnectedHolder();
+    }, []);
+
+    tickets = tickets.filter((ticket) => ticket.address !== connectedHolder?.address);
+    tickets.sort((a, b) => {
+        if (a.amount > b.amount) return -1;
+        if (a.amount < b.amount) return 1;
+        return 0;
+    });
+
     return (
         <div
             {...props}
@@ -25,9 +53,6 @@ export default function TicketTable({
                     <TableRow>
                         <TableHead>
                             Holder
-                        </TableHead>
-                        <TableHead>
-                            Network
                         </TableHead>
                         <TableHead>
                             Tickets
@@ -43,16 +68,13 @@ export default function TicketTable({
                             className="bg-blue-600 bg-opacity-10"
                         >
                             <TableCell>
-                                You
+                                You ({shortenAddress(connectedHolder.address)})
                             </TableCell>
                             <TableCell>
-                                {connectedHolder.network}
+                                {connectedHolder.amount.toString()}
                             </TableCell>
                             <TableCell>
-                                {connectedHolder.amount}
-                            </TableCell>
-                            <TableCell>
-                                X%
+                                {percentageLabel(Number(connectedHolder.amount), Number(lottery.totalTickets))}
                             </TableCell>
                         </TableRow>
                     }
@@ -61,16 +83,13 @@ export default function TicketTable({
                             key={index}
                         >
                             <TableCell>
-                                {ticket.holder.slice(0, 6)}...{ticket.holder.slice(ticket.holder.length - 4)}
+                                {shortenAddress(ticket.address)}
                             </TableCell>
                             <TableCell>
-                                {ticket.network}
+                                {ticket.amount.toString()}
                             </TableCell>
                             <TableCell>
-                                {ticket.amount}
-                            </TableCell>
-                            <TableCell>
-                                X%
+                                {percentageLabel(Number(ticket.amount), Number(lottery.totalTickets))}
                             </TableCell>
                         </TableRow>
                     ))}

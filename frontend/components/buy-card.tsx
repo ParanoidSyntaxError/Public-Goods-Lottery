@@ -2,13 +2,6 @@
 
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -24,22 +17,25 @@ import { Separator } from "@/components/ui/separator";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { web3Auth } from "@/lib/web3AuthProviderProps";
+import { buyTickets, ticketPrice } from "@/lib/lottery-crypto";
 
-export interface BuyCardProps extends React.HTMLAttributes<HTMLElement> { 
+export interface BuyCardProps extends React.HTMLAttributes<HTMLElement> {
+    lotteryId: string;
+    totalTickets?: bigint;
 }
 
 const formSchema = z.object({
-    chainId: z.string().min(1, "Network not selected"),
     amount: z.number().min(1, "Must buy at least one ticket")
 })
 
 export default function BuyCard({
+    lotteryId,
+    totalTickets,
     ...props
 }: BuyCardProps) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            chainId: "",
             amount: 1,
         },
         mode: "all"
@@ -47,7 +43,15 @@ export default function BuyCard({
     form.watch();
 
     const submit = async () => {
+        if (!web3Auth.provider) {
+            return;
+        }
 
+        await buyTickets(
+            web3Auth.provider,
+            lotteryId,
+            BigInt(form.getValues("amount")) * ticketPrice
+        );
     };
 
     return (
@@ -66,47 +70,22 @@ export default function BuyCard({
                     onSubmit={form.handleSubmit(submit)}
                     action=""
                 >
-                    <FormField
-                        control={form.control}
-                        name="chainId"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>
-                                    Network
-                                </FormLabel>
-                                <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                >
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue
-                                                placeholder="Select a network"
-                                            />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        <SelectItem
-                                            value="1"
-                                        >
-                                            Ethereum
-                                        </SelectItem>
-                                        <SelectItem
-                                            value="8453"
-                                        >
-                                            Base
-                                        </SelectItem>
-                                        <SelectItem
-                                            value="10"
-                                        >
-                                            Optimism
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                    {(totalTickets !== undefined) &&
+                        <div
+                            className="space-x-1"
+                        >
+                            <span
+                                className="text-4xl"
+                            >
+                                {totalTickets.toString()}
+                            </span>
+                            <span
+                                className="text-sm"
+                            >
+                                TOTAL
+                            </span>
+                        </div>
+                    }
                     <FormField
                         control={form.control}
                         name="amount"
@@ -121,7 +100,7 @@ export default function BuyCard({
                                         value={field.value}
                                         onChange={(value) => {
                                             let amount = Number(value.currentTarget.value);
-                                            if(Number.isNaN(amount) || amount < 1) {
+                                            if (Number.isNaN(amount) || amount < 1) {
                                                 amount = 1;
                                             }
                                             form.setValue("amount", amount);

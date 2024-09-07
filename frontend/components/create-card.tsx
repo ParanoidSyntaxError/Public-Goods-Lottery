@@ -2,13 +2,6 @@
 
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -23,15 +16,21 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { web3Auth } from "@/lib/web3AuthProviderProps";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "./ui/calendar";
+import { createLottery } from "@/lib/lottery-crypto";
 
 export interface CreateCardProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 const formSchema = z.object({
-    title: z.string().min(1, ""),
-    shortDescription: z.string().min(1, ""),
+    name: z.string().min(1, ""),
     description: z.string().min(1, ""),
-    chainId: z.string().min(1, "Network not selected"),
+    expiration: z.date(),
+    receiver: z.string().min(42, "").max(43, ""),
 })
 
 export default function CreateCard({
@@ -40,17 +39,27 @@ export default function CreateCard({
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            title: "",
-            shortDescription: "",
+            name: "",
             description: "",
-            chainId: "",
+            expiration: new Date(Date.now() + 604800000), // 7 days from now
+            receiver: "",
         },
         mode: "all"
     });
     form.watch();
 
     const submit = async () => {
+        if (!web3Auth.provider) {
+            return;
+        }
 
+        await createLottery(
+            web3Auth.provider,
+            form.getValues("name"),
+            form.getValues("description"),
+            form.getValues("expiration"),
+            form.getValues("receiver")
+        );
     };
 
     return (
@@ -74,27 +83,11 @@ export default function CreateCard({
                     >
                         <FormField
                             control={form.control}
-                            name="title"
+                            name="name"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Title
-                                    </FormLabel>
-                                    <Input
-                                        placeholder=""
-                                        {...field}
-                                    />
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="shortDescription"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        Short Description
+                                        Name
                                     </FormLabel>
                                     <Input
                                         placeholder=""
@@ -122,41 +115,57 @@ export default function CreateCard({
                         />
                         <FormField
                             control={form.control}
-                            name="chainId"
+                            name="expiration"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-col">
+                                    <FormLabel>Expiration</FormLabel>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <FormControl>
+                                                <Button
+                                                    variant={"outline"}
+                                                    className={cn(
+                                                        "w-full pl-3 text-left font-normal",
+                                                        !field.value && "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    {field.value ? (
+                                                        format(field.value, "PPP")
+                                                    ) : (
+                                                        <span>Pick a date</span>
+                                                    )}
+                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                </Button>
+                                            </FormControl>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar
+                                                mode="single"
+                                                selected={field.value}
+                                                onSelect={field.onChange}
+                                                disabled={(date) =>
+                                                    date < new Date()
+                                                }
+                                                initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="receiver"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Network
+                                        Receiver
                                     </FormLabel>
-                                    <Select
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue
-                                                    placeholder="Select a network"
-                                                />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem
-                                                value="1"
-                                            >
-                                                Ethereum
-                                            </SelectItem>
-                                            <SelectItem
-                                                value="8453"
-                                            >
-                                                Base
-                                            </SelectItem>
-                                            <SelectItem
-                                                value="10"
-                                            >
-                                                Optimism
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                    <Input
+                                        placeholder=""
+                                        {...field}
+                                    />
                                     <FormMessage />
                                 </FormItem>
                             )}

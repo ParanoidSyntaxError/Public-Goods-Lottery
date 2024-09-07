@@ -1,6 +1,6 @@
 import CreateCard from "@/components/create-card";
 
-export default function Create() {
+export default function CreatePage() {
     return (
         <div>
             <CreateCard

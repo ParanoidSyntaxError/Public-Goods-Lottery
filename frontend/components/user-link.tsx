@@ -2,16 +2,16 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export interface ProfileLinkProps extends React.HTMLAttributes<HTMLElement> {
+export interface UserLinkProps extends React.HTMLAttributes<HTMLElement> {
     label: string;
-    url: string;
+    slug: string;
 }
 
-export default function ProfileLink({
+export default function UserLink({
     label,
-    url,
+    slug,
     ...props
-}: ProfileLinkProps) {
+}: UserLinkProps) {
     return (
         <Button
             variant="link"
@@ -21,7 +21,7 @@ export default function ProfileLink({
             )}
         >
             <Link
-                href={url}
+                href={`/user/${slug}`}
                 className="text-blue-600"
             >
                 {label}

@@ -2,28 +2,34 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { cn, shortenAddress } from "@/lib/utils";
 import DurationTag from "@/components/duration-text-";
-import ProfileLink from "@/components/profile-link";
+import { formatUnits } from "ethers";
+import UserLink from "@/components/user-link";
 
 export interface LotteryCardProps extends React.HTMLAttributes<HTMLElement> {
-    title: string;
-    author: string;
+    id: string;
+    name: string;
     description: string;
-    value: number;
-    tickets: number;
+    receiver: string;
+    value: bigint;
+    totalTickets: bigint;
     expiration: Date;
 }
 
 export default function LotteryCard({
-    title,
-    author,
+    id,
+    name,
     description,
+    receiver,
     value,
-    tickets,
+    totalTickets,
     expiration,
     ...props
 }: LotteryCardProps) {
+    const shortReceiver = shortenAddress(receiver);
+    const ethValue = formatUnits(value);
+
     return (
         <Card
             {...props}
@@ -41,11 +47,11 @@ export default function LotteryCard({
                     <div
                         className="text-2xl font-semibold"
                     >
-                        {title}
+                        {name}
                     </div>
-                    <ProfileLink
-                        label={author}
-                        url="org"
+                    <UserLink
+                        label={shortReceiver}
+                        slug={receiver}
                     />
                     <div
                         className="text-sm text-muted-foreground pt-2"
@@ -62,12 +68,12 @@ export default function LotteryCard({
                     <div
                         className="text-3xl font-bold"
                     >
-                        {value.toFixed(3)} ETH
+                        {ethValue} ETH
                     </div>
                     <div
                         className="text-sm text-muted-foreground"
                     >
-                        Raised from {tickets.toLocaleString("en-US", { maximumFractionDigits: 0 })} tickets
+                        Raised from {totalTickets.toLocaleString("en-US", { maximumFractionDigits: 0 })} tickets
                     </div>
                     <Separator />
                 </div>
@@ -76,9 +82,10 @@ export default function LotteryCard({
                 >
                     <Button
                         className="w-full rounded-full"
+                        asChild
                     >
                         <Link
-                            href="view"
+                            href={`/lottery/${id}`}
                         >
                             View
                         </Link>
