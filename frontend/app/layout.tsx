@@ -4,6 +4,8 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import TopNav from "@/components/top-nav";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Web3AuthProvider } from "@web3auth/modal-react-hooks";
+import { web3AuthOptions } from "@/lib/web3AuthProviderProps";
 
 const fontSans = FontSans({
     subsets: ["latin"],
@@ -33,21 +35,21 @@ export default function RootLayout({
                 )}
             >
                 <ThemeProvider
-					attribute="class"
-					defaultTheme="system"
-					enableSystem
-					disableTransitionOnChange
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
                 >
-                    <div
-                        className="px-6"
-                    >
-                        <TopNav />
-                    </div>
-                    <div
-                        className="max-w-[72rem] w-full mx-auto my-16 px-8"
-                    >
-                        {children}
-                    </div>
+                        <div
+                            className="px-6"
+                        >
+                            <TopNav />
+                        </div>
+                        <div
+                            className="max-w-[72rem] w-full mx-auto my-16 px-8"
+                        >
+                            {children}
+                        </div>
                 </ThemeProvider>
             </body>
         </html>

@@ -4,8 +4,6 @@ import TicketTable from "@/components/ticket-table";
 import UserLink from "@/components/user-link";
 import { getLottery, getTicketHolders } from "@/lib/lottery-indexer";
 import { shortenAddress } from "@/lib/utils";
-import { web3Auth, web3AuthOptions } from "@/lib/web3AuthProviderProps";
-import { Web3AuthProvider } from "@web3auth/modal-react-hooks";
 import { formatUnits } from "ethers";
 
 export default async function LotteryPage({

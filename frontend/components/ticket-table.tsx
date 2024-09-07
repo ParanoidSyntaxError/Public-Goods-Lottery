@@ -4,8 +4,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { getAddress } from "@/lib/lottery-crypto";
 import { getTicketHolder } from "@/lib/lottery-indexer";
 import { Lottery, percentageLabel, shortenAddress, TicketHolder } from "@/lib/utils";
-import { useEffect, useState } from "react";
-import { useWeb3Auth } from "@web3auth/modal-react-hooks";
+import { useState } from "react";
+import { web3Auth } from "@/lib/web3AuthProviderProps";
 
 export interface TicketTableProps extends React.HTMLAttributes<HTMLElement> {
     lottery: Lottery;
@@ -19,23 +19,21 @@ export default function TicketTable({
 }: TicketTableProps) {
     const [connectedHolder, setConnectedHolder] = useState<TicketHolder | undefined>(undefined);
 
-    const { isInitialized, isConnected, provider } = useWeb3Auth();
-
-    useEffect(() => {
-        const updateConnectedHolder = async () => {
-            if (provider) {
-                const connectedAddress = await getAddress(provider);
-                if (connectedAddress) {
-                    const holder = await getTicketHolder(lottery.id, connectedAddress);
-                    setConnectedHolder(holder);
-                }
-            } else {
-                setConnectedHolder(undefined);
+    web3Auth.on("connected", async () => {
+        if (web3Auth.provider) {
+            const connectedAddress = await getAddress(web3Auth.provider);
+            if (connectedAddress) {
+                const holder = await getTicketHolder(lottery.id, connectedAddress);
+                setConnectedHolder(holder);
             }
-        };
+        } else {
+            setConnectedHolder(undefined);
+        }
+    });
 
-        updateConnectedHolder();
-    }, []);
+    web3Auth.on("disconnected", () => {
+        setConnectedHolder(undefined);
+    });
 
     tickets = tickets.filter((ticket) => ticket.address !== connectedHolder?.address);
     tickets.sort((a, b) => {
