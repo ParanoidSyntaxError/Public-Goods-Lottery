@@ -1,6 +1,6 @@
 import { IProvider } from "@web3auth/base";
 import { AbiCoder, BrowserProvider, Contract, JsonRpcProvider } from "ethers";
-import { Lottery, TicketHolder, Winner } from "./lottery-indexer";
+import { Lottery, Ticket, TicketHolder, Winner } from "./lottery-indexer";
 
 export interface OnchainLottery {
     expiration: bigint;
@@ -19,8 +19,8 @@ const pglAddress = "0xfFB4913877eCEc0aDf4a467D67B926809577F411";
 
 export const ticketPrice = 1000000000000000n;
 
-const winnersPercentage = 30;
-const winnersPercentages = [60, 30, 10];
+export const winnersPercentage = 30;
+export const winnersPercentages = [60, 30, 10];
 
 export async function getAddress(provider: IProvider): Promise<string | undefined> {
     try {
@@ -35,13 +35,13 @@ export async function getAddress(provider: IProvider): Promise<string | undefine
     return undefined;
 }
 
-export async function getOnchainLottery(lotteryId: bigint): Promise<OnchainLottery | undefined> {
+export async function getOnchainLottery(onchainId: bigint): Promise<OnchainLottery | undefined> {
     try {
         const provider = new JsonRpcProvider("https://sepolia.base.org/");
 
         const pglContract = new Contract(pglAddress, pglAbi, provider);
 
-        const data = await pglContract.lottery(lotteryId);
+        const data = await pglContract.lottery(onchainId);
 
         return {
             expiration: data[0],
@@ -57,41 +57,36 @@ export async function getOnchainLottery(lotteryId: bigint): Promise<OnchainLotte
     return undefined;
 }
 
-export async function calculateWinners(lottery: Lottery, ticketHolders: TicketHolder[]): Promise<Winner[]> {
+export async function findWinners(lottery: Lottery, tickets: Ticket[]): Promise<Ticket[]> {
     try {
-        const onchainLottery = await getOnchainLottery(lottery.id);
+        const onchainLottery = await getOnchainLottery(lottery.onchainId);
         if (!onchainLottery) {
             return [];
         }
 
-        ticketHolders = ticketHolders.sort((a, b) => {
+        tickets = tickets.sort((a, b) => {
             if (a.onchainId < b.onchainId) return -1;
             if (a.onchainId > b.onchainId) return 1;
             return 0;
         });
 
-        const winnersValue = (Number(lottery.value) / 100) * winnersPercentage;
-        const winners: Winner[] = [];
+        const winningTickets: Ticket[] = [];
+        
         onchainLottery.vrfResponses.forEach((vrfResponse, vrfIndex) => {
             const winningTicket = vrfResponse % lottery.totalTickets;
 
             let ticketCount = 0n;
-            for (let i = 0; i < ticketHolders.length; i++) {
-                ticketCount += ticketHolders[i].amount;
+            for (let i = 0; i < tickets.length; i++) {
+                ticketCount += tickets[i].amount;
 
                 if (ticketCount > winningTicket) {
-                    winners.push({
-                        envioId: ticketHolders[i].envioId,
-                        onchainId: ticketHolders[i].onchainId,
-                        address: ticketHolders[i].address,
-                        value: BigInt(Math.trunc((winnersValue / 100) * winnersPercentages[vrfIndex]))
-                    });
+                    winningTickets.push(tickets[i]);
                     break;
                 }
             }
         });
 
-        return winners;
+        return winningTickets;
     } catch (error) {
         console.log(error);
     }
@@ -112,7 +107,7 @@ export async function createLottery(provider: IProvider, name: string, descripti
     }
 }
 
-export async function buyTickets(provider: IProvider, lotteryId: bigint, value: bigint) {
+export async function buyTickets(provider: IProvider, onchainId: bigint, value: bigint) {
     try {
         const ethersProvider = new BrowserProvider(provider);
         const signer = await ethersProvider.getSigner();
@@ -121,7 +116,7 @@ export async function buyTickets(provider: IProvider, lotteryId: bigint, value: 
 
         const receiver = await signer.getAddress();
 
-        const tx = await pglContract.buyTicket(lotteryId, receiver, {
+        const tx = await pglContract.buyTicket(onchainId, receiver, {
             value: value
         });
     } catch (error) {
@@ -129,7 +124,7 @@ export async function buyTickets(provider: IProvider, lotteryId: bigint, value: 
     }
 }
 
-export async function requestEndLottery(provider: IProvider, lotteryId: bigint) {
+export async function requestEndLottery(provider: IProvider, onchainId: bigint) {
     try {
         const ethersProvider = new BrowserProvider(provider);
         const signer = await ethersProvider.getSigner();
@@ -137,7 +132,7 @@ export async function requestEndLottery(provider: IProvider, lotteryId: bigint) 
         const chainlinkTokenContract = new Contract(chainlinkTokenAddress, chainlinkTokenAbi, signer);
 
         const abiCoder = new AbiCoder();
-        const calldata = abiCoder.encode(["uint256"], [lotteryId]);
+        const calldata = abiCoder.encode(["uint256"], [onchainId]);
 
         const tx = await chainlinkTokenContract.transferAndCall(pglAddress, 1000000000000000000n, calldata);
     } catch (error) {
@@ -145,14 +140,14 @@ export async function requestEndLottery(provider: IProvider, lotteryId: bigint) 
     }
 }
 
-export async function fulfillEndLottery(provider: IProvider, lotteryId: bigint, ticketIds: bigint[]) {
+export async function fulfillEndLottery(provider: IProvider, onchainId: bigint, ticketIds: bigint[]) {
     try {
         const ethersProvider = new BrowserProvider(provider);
         const signer = await ethersProvider.getSigner();
 
         const pglContract = new Contract(pglAddress, pglAbi, signer);
 
-        const tx = await pglContract.fulfillEndLottery(lotteryId, ticketIds);
+        const tx = await pglContract.fulfillEndLottery(onchainId, ticketIds);
     } catch (error) {
         console.log(error);
     }

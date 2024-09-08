@@ -71,7 +71,7 @@ export default function LotteryCard({
                         asChild
                     >
                         <Link
-                            href={`/lottery/${lottery.id}`}
+                            href={`/lottery/${lottery.onchainId}`}
                         >
                             View
                         </Link>

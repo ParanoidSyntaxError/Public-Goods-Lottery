@@ -23,7 +23,7 @@ export default function TicketTable({
         if (web3Auth.provider) {
             const connectedAddress = await getAddress(web3Auth.provider);
             if (connectedAddress) {
-                const holder = await getTicketHolder(lottery.id, connectedAddress);
+                const holder = await getTicketHolder(lottery.envioId, connectedAddress);
                 setConnectedHolder(holder);
             }
         } else {

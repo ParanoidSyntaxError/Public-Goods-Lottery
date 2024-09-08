@@ -4,7 +4,8 @@ import EndCard from "@/components/end-card";
 import TicketTable from "@/components/ticket-table";
 import UserLink from "@/components/user-link";
 import WinnersTable from "@/components/winners-table";
-import { getLottery, getTicketHolders, getWinners } from "@/lib/lottery-indexer";
+import { findWinners } from "@/lib/lottery-crypto";
+import { getLottery, getTicketHolders, getTickets, getWinners } from "@/lib/lottery-indexer";
 import { shortenAddress } from "@/lib/utils";
 import { formatUnits } from "ethers";
 
@@ -23,8 +24,10 @@ export default async function LotteryPage({
         )
     }
 
-    const ticketHolders = await getTicketHolders(BigInt(lotteryId));
-    const winners = await getWinners(lottery, ticketHolders);
+    const ticketHolders = await getTicketHolders(lottery.envioId);
+    const tickets = await getTickets(lottery.envioId);
+    const winningTickets = await findWinners(lottery, tickets);
+    const winners = await getWinners(lottery, tickets);
 
     return (
         <div
@@ -93,7 +96,7 @@ export default async function LotteryPage({
                     <EndCard
                         className="min-w-72 h-fit"
                         lottery={lottery}
-                        winners={winners}
+                        winningTickets={winningTickets}
                     />
                 }
             </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Lottery, LotteryState, TicketHolder, Winner } from "@/lib/lottery-indexer";
+import { Lottery, LotteryState, Ticket, TicketHolder, Winner } from "@/lib/lottery-indexer";
 import { Card } from "./ui/card";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
@@ -10,23 +10,23 @@ import { web3Auth } from "@/lib/web3AuthProviderProps";
 
 export interface EndCardProps extends React.HTMLAttributes<HTMLElement> {
     lottery: Lottery;
-    winners: Winner[];
+    winningTickets: Ticket[];
 }
 
 export default function EndCard({
     lottery,
-    winners,
+    winningTickets,
     ...props
 }: EndCardProps) {
     const requestEnd = async () => {
         if (web3Auth.provider) {
-            await requestEndLottery(web3Auth.provider, lottery.id);
+            await requestEndLottery(web3Auth.provider, lottery.onchainId);
         }
     };
 
     const payWinners = async () => {
         if (web3Auth.provider) {
-            await fulfillEndLottery(web3Auth.provider, lottery.id, winners.map((winner) => winner.onchainId));
+            await fulfillEndLottery(web3Auth.provider, lottery.onchainId, winningTickets.map((ticket) => ticket.onchainId));
         }
     };
 

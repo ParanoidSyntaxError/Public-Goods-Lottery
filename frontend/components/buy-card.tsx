@@ -49,7 +49,7 @@ export default function BuyCard({
 
         await buyTickets(
             web3Auth.provider,
-            lottery.id,
+            lottery.onchainId,
             BigInt(form.getValues("amount")) * ticketPrice
         );
     };
