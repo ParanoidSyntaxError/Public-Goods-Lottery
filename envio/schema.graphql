@@ -1,5 +1,6 @@
 type Lottery {
     id: ID!
+    onchainId: BigInt!
     name: String!
     description: String!
     expiration: BigInt!
@@ -14,6 +15,7 @@ type Lottery {
 
 type TicketHolder {
     id: ID!
+    onchainId: BigInt!
     lottery: Lottery!
     address: String!
     amount: BigInt!    

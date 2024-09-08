@@ -23,6 +23,7 @@ function winnerId(lotteryId: string, address: string, index: string): string {
 PublicGoodsLottery.LotteryCreated.handler(async ({ event, context }) => {
     const lottery: Lottery = {
         id: event.params.lotteryId.toString(),
+        onchainId: event.params.lotteryId,
         name: event.params.name,
         description: event.params.description,
         expiration: event.params.expiration,
@@ -53,6 +54,7 @@ PublicGoodsLottery.TicketPurchased.handler(async ({ event, context }) => {
 
     context.TicketHolder.set({
         id: holderId,
+        onchainId: event.params.ticketId,
         lottery_id: lottery.id,
         address: event.params.receiver,
         amount: ticketHolderAmount
@@ -60,6 +62,7 @@ PublicGoodsLottery.TicketPurchased.handler(async ({ event, context }) => {
 
     context.Lottery.set({
         id: lottery.id,
+        onchainId: lottery.onchainId,
         name: lottery.name,
         description: lottery.description,
         expiration: lottery.expiration,
@@ -79,6 +82,7 @@ PublicGoodsLottery.LotteryEndRequested.handler(async ({ event, context }) => {
 
     context.Lottery.set({
         id: lottery.id,
+        onchainId: lottery.onchainId,
         name: lottery.name,
         description: lottery.description,
         expiration: lottery.expiration,
@@ -105,6 +109,7 @@ PublicGoodsLottery.LotteryEnded.handler(async ({ event, context }) => {
 
     context.Lottery.set({
         id: lottery.id,
+        onchainId: lottery.onchainId,
         name: lottery.name,
         description: lottery.description,
         expiration: lottery.expiration,
