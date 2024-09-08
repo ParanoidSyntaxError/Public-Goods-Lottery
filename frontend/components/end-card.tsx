@@ -1,19 +1,21 @@
 "use client";
 
-import { Lottery, LotteryState } from "@/lib/lottery-indexer";
+import { Lottery, LotteryState, TicketHolder, Winner } from "@/lib/lottery-indexer";
 import { Card } from "./ui/card";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import TotalTicketsLabel from "./total-tickets-label";
-import { requestEndLottery } from "@/lib/lottery-crypto";
+import { fulfillEndLottery, requestEndLottery } from "@/lib/lottery-crypto";
 import { web3Auth } from "@/lib/web3AuthProviderProps";
 
 export interface EndCardProps extends React.HTMLAttributes<HTMLElement> {
     lottery: Lottery;
+    winners: Winner[];
 }
 
 export default function EndCard({
     lottery,
+    winners,
     ...props
 }: EndCardProps) {
     const requestEnd = async () => {
@@ -23,7 +25,9 @@ export default function EndCard({
     };
 
     const payWinners = async () => {
-
+        if (web3Auth.provider) {
+            await fulfillEndLottery(web3Auth.provider, lottery.id, winners.map((winner) => winner.onchainId));
+        }
     };
 
     if (lottery.expiration.getTime() <= Date.now() && lottery.state === LotteryState.InProgress) {
@@ -69,9 +73,35 @@ export default function EndCard({
                     />
                     <Button
                         className="rounded-full w-full"
-                        disabled
+                        onClick={payWinners}
                     >
                         Payout Winners
+                    </Button>
+                </div>
+            </Card>
+        );
+    }
+
+    if (lottery.state === LotteryState.Ended) {
+        return (
+            <Card
+                {...props}
+                className={cn(
+                    "p-6",
+                    props.className
+                )}
+            >
+                <div
+                    className="space-y-6"
+                >
+                    <TotalTicketsLabel
+                        totalTickets={lottery.totalTickets}
+                    />
+                    <Button
+                        className="rounded-full w-full"
+                        disabled
+                    >
+                        Lottery Ended
                     </Button>
                 </div>
             </Card>

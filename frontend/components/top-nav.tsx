@@ -13,9 +13,18 @@ export default function TopNav() {
                 className="flex flex-row items-center space-x-2"
             >
                 <div
-                    className="text-2xl font-semibold"
+                    className="flex flex-row"
                 >
-                    🎰 Public Goods Lottery
+                    <div
+                        className="text-6xl"
+                    >
+                        🎫
+                    </div>
+                    <div
+                        className="text-4xl font-semibold my-auto"
+                    >
+                        PGL
+                    </div>
                 </div>
             </Link>
             <div
@@ -41,9 +50,9 @@ export default function TopNav() {
                         Create
                     </Button>
                 </Link>
-                <ToggleTheme/>
+                <ToggleTheme />
                 <div>
-                    <Web3AuthConnector/>
+                    <Web3AuthConnector />
                 </div>
             </div>
         </div>

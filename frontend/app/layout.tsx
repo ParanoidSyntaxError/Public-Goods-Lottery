@@ -4,8 +4,6 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import TopNav from "@/components/top-nav";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Web3AuthProvider } from "@web3auth/modal-react-hooks";
-import { web3AuthOptions } from "@/lib/web3AuthProviderProps";
 
 const fontSans = FontSans({
     subsets: ["latin"],

@@ -3,23 +3,28 @@ import DurationTag from "@/components/duration-text-";
 import EndCard from "@/components/end-card";
 import TicketTable from "@/components/ticket-table";
 import UserLink from "@/components/user-link";
-import { getLottery, getTicketHolders, LotteryState } from "@/lib/lottery-indexer";
+import WinnersTable from "@/components/winners-table";
+import { getLottery, getTicketHolders, getWinners } from "@/lib/lottery-indexer";
 import { shortenAddress } from "@/lib/utils";
 import { formatUnits } from "ethers";
 
 export default async function LotteryPage({
     params: { lotteryId }
 }: { params: { lotteryId: string } }) {
-    const lottery = await getLottery(lotteryId);
-    const ticketHolders = await getTicketHolders(lotteryId);
+    const lottery = await getLottery(BigInt(lotteryId));
 
     if (!lottery) {
         return (
-            <div>
+            <div
+                className="text-3xl text-center"
+            >
                 Lottery not found
             </div>
         )
     }
+
+    const ticketHolders = await getTicketHolders(BigInt(lotteryId));
+    const winners = await getWinners(lottery, ticketHolders);
 
     return (
         <div
@@ -64,11 +69,22 @@ export default async function LotteryPage({
             <div
                 className="flex flex-row justify-between mx-auto space-x-4"
             >
-                <TicketTable
-                    className="w-full"
-                    lottery={lottery}
-                    tickets={ticketHolders}
-                />
+                <div
+                    className="w-full space-y-8"
+                >
+                    {winners.length > 0 &&
+                        <WinnersTable
+                            className="w-full"
+                            lottery={lottery}
+                            winners={winners}
+                        />
+                    }
+                    <TicketTable
+                        className="w-full"
+                        lottery={lottery}
+                        ticketHolders={ticketHolders}
+                    />
+                </div>
                 {lottery.expiration.getTime() > Date.now() ?
                     <BuyCard
                         className="min-w-72 h-fit"
@@ -77,6 +93,7 @@ export default async function LotteryPage({
                     <EndCard
                         className="min-w-72 h-fit"
                         lottery={lottery}
+                        winners={winners}
                     />
                 }
             </div>

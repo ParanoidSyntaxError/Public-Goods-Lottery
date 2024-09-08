@@ -2,19 +2,19 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getAddress } from "@/lib/lottery-crypto";
-import { getTicketHolder } from "@/lib/lottery-indexer";
-import { cn, Lottery, percentageLabel, shortenAddress, TicketHolder } from "@/lib/utils";
+import { getTicketHolder, Lottery, TicketHolder } from "@/lib/lottery-indexer";
+import { cn, percentageLabel, shortenAddress } from "@/lib/utils";
 import { useState } from "react";
 import { web3Auth } from "@/lib/web3AuthProviderProps";
 
 export interface TicketTableProps extends React.HTMLAttributes<HTMLElement> {
     lottery: Lottery;
-    tickets: TicketHolder[];
+    ticketHolders: TicketHolder[];
 }
 
 export default function TicketTable({
     lottery,
-    tickets,
+    ticketHolders,
     ...props
 }: TicketTableProps) {
     const [connectedHolder, setConnectedHolder] = useState<TicketHolder | undefined>(undefined);
@@ -35,8 +35,8 @@ export default function TicketTable({
         setConnectedHolder(undefined);
     });
 
-    tickets = tickets.filter((ticket) => ticket.address !== connectedHolder?.address);
-    tickets.sort((a, b) => {
+    ticketHolders = ticketHolders.filter((ticket) => ticket.address !== connectedHolder?.address);
+    ticketHolders.sort((a, b) => {
         if (a.amount > b.amount) return -1;
         if (a.amount < b.amount) return 1;
         return 0;
@@ -51,7 +51,9 @@ export default function TicketTable({
             )}
         >
             <Table>
-                <TableHeader>
+                <TableHeader
+                    className="bg-muted"
+                >
                     <TableRow>
                         <TableHead>
                             Holder
@@ -84,7 +86,7 @@ export default function TicketTable({
                             </TableCell>
                         </TableRow>
                     }
-                    {tickets.map((ticket, index) => (
+                    {ticketHolders.map((ticket, index) => (
                         <TableRow
                             key={index}
                         >

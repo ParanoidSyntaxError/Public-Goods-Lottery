@@ -1,31 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
-export enum LotteryState {
-    InProgress = "inprogress",
-    Ending = "ending",
-    Ended = "ended"
-}
-
-export interface Lottery {
-    id: string;
-    name: string;
-    description: string;
-    expiration: Date;
-    totalTickets: bigint;
-    value: bigint;
-    receiver: string;
-    state: LotteryState;
-}
-
-export interface TicketHolder {
-    id: string;
-    address: string;
-    amount: bigint;
-}
-
-export const ticketPrice = 1000000000000000n;
-
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
 }

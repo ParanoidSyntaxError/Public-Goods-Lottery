@@ -20,7 +20,7 @@ export default function LotteryCard({
         <Card
             {...props}
             className={cn(
-                "p-6",
+                "h-fit p-6",
                 props.className
             )}
         >
@@ -31,7 +31,7 @@ export default function LotteryCard({
                     className="space-y-2"
                 >
                     <div
-                        className="text-2xl font-semibold w-64 h-16 text-ellipsis line-clamp-2 overflow-hidden"
+                        className="text-2xl font-semibold w-64 max-h-16 text-ellipsis line-clamp-2 overflow-hidden"
                     >
                         {lottery.name}
                     </div>
@@ -40,7 +40,7 @@ export default function LotteryCard({
                         slug={lottery.receiver}
                     />
                     <div
-                        className="text-sm text-muted-foreground pt-2 w-64 h-12 text-ellipsis line-clamp-2 overflow-hidden"
+                        className="text-sm text-muted-foreground pt-2 w-64 max-h-12 text-ellipsis line-clamp-2 overflow-hidden"
                     >
                         {lottery.description}
                     </div>
