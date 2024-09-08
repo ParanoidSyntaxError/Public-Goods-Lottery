@@ -12,12 +12,16 @@ enum LotteryState {
     Ended = "ended"
 }
 
+function ticketId(lotteryId: string, ticketId: string): string {
+    return lotteryId + "-" + ticketId + "-ticket";
+}
+
 function ticketHolderId(lotteryId: string, address: string): string {
-    return lotteryId + address + "ticketHolder";
+    return lotteryId + "-" + address + "-ticketHolder";
 }
 
 function winnerId(lotteryId: string, address: string, index: string): string {
-    return lotteryId + address + "winner" + index;
+    return lotteryId + "-" + address + "-" + index + "-winner";
 }
 
 PublicGoodsLottery.LotteryCreated.handler(async ({ event, context }) => {
@@ -52,9 +56,16 @@ PublicGoodsLottery.TicketPurchased.handler(async ({ event, context }) => {
         ticketHolderAmount += ticketHolder.amount;
     }
 
+    context.Ticket.set({
+        id: ticketId(lottery.id, event.params.ticketId.toString()),
+        onchainId: event.params.ticketId,
+        lottery_id: lottery.id,
+        address: event.params.receiver,
+        amount: event.params.amount
+    });  
+
     context.TicketHolder.set({
         id: holderId,
-        onchainId: event.params.ticketId,
         lottery_id: lottery.id,
         address: event.params.receiver,
         amount: ticketHolderAmount

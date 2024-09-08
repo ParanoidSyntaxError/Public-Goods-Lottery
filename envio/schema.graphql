@@ -13,9 +13,16 @@ type Lottery {
     winners: [Winner!]! @derivedFrom(field: "lottery")
 }
 
-type TicketHolder {
+type Ticket {
     id: ID!
     onchainId: BigInt!
+    lottery: Lottery!
+    address: String!
+    amount: BigInt!
+}
+
+type TicketHolder {
+    id: ID!
     lottery: Lottery!
     address: String!
     amount: BigInt!    
