@@ -9,7 +9,7 @@ export default function TopNav() {
             className="flex flex-row justify-between items-center h-20"
         >
             <Link
-                href={"/"}
+                href={"/explore"}
                 className="flex flex-row items-center space-x-2"
             >
                 <div
