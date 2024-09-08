@@ -144,8 +144,7 @@ contract PublicGoodsLottery is
 
     function fulfillEndLottery(
         uint256 lotteryId,
-        uint256[] memory lowerTicketIds,
-        uint256[] memory upperTicketIds
+        uint256[] memory ticketIds
     ) external override {
         if (_lotteries[lotteryId].vrfResponses.length == 0) {
             revert LotteryVRFUnfulfilled(
@@ -164,11 +163,7 @@ contract PublicGoodsLottery is
 
         uint256 pgValue = lotteryValue - winnersTotal;
 
-        address[] memory winners = _winnersAddresses(
-            lotteryId,
-            lowerTicketIds,
-            upperTicketIds
-        );
+        address[] memory winners = _winnersAddresses(lotteryId, ticketIds);
 
         Address.sendValue(payable(_lotteries[lotteryId].receiver), pgValue);
 
@@ -203,48 +198,26 @@ contract PublicGoodsLottery is
 
     function _winnersAddresses(
         uint256 lotteryId,
-        uint256[] memory lowerTicketIds,
-        uint256[] memory upperTicketIds
+        uint256[] memory ticketIds
     ) private view returns (address[] memory addresses) {
         addresses = new address[](WINNERS_PERCENTAGES.length);
 
         for (uint256 i = 0; i < addresses.length; i++) {
-            if (lowerTicketIds[i] > upperTicketIds[i]) {
-                revert InvalidTicketIds(lowerTicketIds[i], upperTicketIds[i]);
-            }
-
             uint256 winningTicket = _lotteries[lotteryId].vrfResponses[i] %
                 _lotteries[lotteryId].totalTickets;
 
-            if (upperTicketIds[i] == 0) {
-                if (
-                    winningTicket >=
-                    _lotteries[lotteryId].tickets[upperTicketIds[i]].upperBound
-                ) {
-                    revert InvalidTicketIds(
-                        lowerTicketIds[i],
-                        upperTicketIds[i]
-                    );
+            if (ticketIds[i] == 0) {
+                if (winningTicket >= _lotteries[lotteryId].tickets[ticketIds[i]].upperBound) {
+                    revert InvalidTicketId(ticketIds[i]);
                 }
             } else {
-                if (
-                    winningTicket <
-                    _lotteries[lotteryId]
-                        .tickets[lowerTicketIds[i]]
-                        .upperBound ||
-                    winningTicket >=
-                    _lotteries[lotteryId].tickets[upperTicketIds[i]].upperBound
-                ) {
-                    revert InvalidTicketIds(
-                        lowerTicketIds[i],
-                        upperTicketIds[i]
-                    );
+                if (winningTicket >= _lotteries[lotteryId].tickets[ticketIds[i]].upperBound || 
+                    winningTicket < _lotteries[lotteryId].tickets[ticketIds[i] - 1].upperBound) {
+                    revert InvalidTicketId(ticketIds[i]);
                 }
             }
 
-            addresses[i] = _lotteries[lotteryId]
-                .tickets[upperTicketIds[i]]
-                .holder;
+            addresses[i] = _lotteries[lotteryId].tickets[ticketIds[i]].holder;
         }
     }
 

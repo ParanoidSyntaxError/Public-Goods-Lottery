@@ -15,7 +15,7 @@ interface IPublicGoodsLottery is IERC677Receiver {
     error LotteryEndAlreadyRequested(uint256 lotteryId, uint256 requestId);
     error LotteryVRFUnfulfilled(uint256 lotteryId, uint256 requestId);
 
-    error InvalidTicketIds(uint256 lowerId, uint256 upperId);
+    error InvalidTicketId(uint256 ticketId);
 
     error InvalidOnTokenTransferMsgSender(address msgSender);
 
@@ -85,7 +85,6 @@ interface IPublicGoodsLottery is IERC677Receiver {
 
     function fulfillEndLottery(
         uint256 lotteryId,
-        uint256[] memory lowerTicketIds,
-        uint256[] memory upperTicketIds
+        uint256[] memory ticketIds
     ) external;
 }
